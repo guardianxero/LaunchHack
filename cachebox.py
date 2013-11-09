@@ -11,7 +11,7 @@ APP_FOLDER = '/c'
 KEY = lambda cache_file: cache_file.date
 DIRECTORY = u'.'
 CUTOFF = 14
-MEGABYTE_50 = 52428800
+MEGABYTE_50 = 524288
 BUFFER_SPACE = MEGABYTE_50
 
 
@@ -64,13 +64,20 @@ def addFiles(finalList,client):
 		except dropbox.rest.ErrorResponse, e:
 			pass
 
-
 def shrinkPartition(client):
 	freeSpace = getAvailableSpace(client)
 	folder_metadata = client.metadata('/')
 	cacheFiles = []
-	for meta in folder_metadata:
-		cacheFiles.append((meta['path'],strptime(meta['modified'],)))
+	format = '%a, %d %b %Y %X %z'
+	for meta in folder_metadata['contents']:
+		#Get all files from app folder
+		cacheFiles.append(CacheFile(meta['path'], datetime.strptime(meta['modified'],format), meta['bytes'])) 
+	#Sort by date
+	cacheFiles.sort(key=KEY)
+	while freeSpace <= 0:
+		removedFile = cacheFiles.pop()
+		client.file_delete(removedFile.directory)
+		freeSpace += removedFile.size
 
 def main():
 	client = authenticate()
