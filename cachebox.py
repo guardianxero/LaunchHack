@@ -2,6 +2,7 @@
 import dropbox
 import datetime
 import os
+import re
 from recentfiles import *
 
 # Get your app key and secret from the Dropbox developer website
@@ -68,20 +69,22 @@ def shrinkPartition(client):
 	freeSpace = getAvailableSpace(client)
 	folder_metadata = client.metadata('/')
 	cacheFiles = []
-	format = '%a, %d %b %Y %X %z'
+	format = '%a, %d %b %Y %H:%M:%S'
 	for meta in folder_metadata['contents']:
 		#Get all files from app folder
-		cacheFiles.append(CacheFile(meta['path'], datetime.strptime(meta['modified'],format), meta['bytes'])) 
+		date = re.sub(r"[+-]([0-9])+", "", meta['modified']).strip()
+		cacheFiles.append(CacheFile(meta['path'], datetime.strptime(date, format), meta['bytes'])) 
 	#Sort by date
 	cacheFiles.sort(key=KEY)
-	while freeSpace <= 0:
+	while freeSpace <= 0 and len(cacheFiles)>0:
 		removedFile = cacheFiles.pop()
 		client.file_delete(removedFile.directory)
 		freeSpace += removedFile.size
 
 def main():
 	client = authenticate()
-	addFiles(getFinalList(client), client)
+	shrinkPartition(client)
+	#addFiles(getFinalList(client), client)
 	# date1 = datetime.date.today()
 	# cacheFile = CacheFile('./test.c', date1, 1)
 	# finalList = [cacheFile]
