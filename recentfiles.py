@@ -32,5 +32,5 @@ def unsorted_list(PATH, Days): ## returns unsorted list of recent files accessed
 				if filetype not in not_include:
 					recent_files.append(CacheFile(full_path,mtime,os.path.getsize(full_path))) ## appends to the recent files list
 	return recent_files
-print(unsorted_list("C:/Users/Kunal/Documents",7))
+# print(unsorted_list(os.path.expanduser('~') + "/Documents",7))
 
