@@ -19,9 +19,9 @@ def unsorted_list(PATH, Days): ## returns unsorted list of recent files accessed
 	difference=datetime.timedelta(days=Days)
 	min_mtime=min_mtime-difference # sets the earliest date from which the files should be
 	recent_files=[] ## the list that will return in the form [(fullpath name,(date,filesize))]
-	not_include= ['.git']#creates file types that we don't want to include 
+	not_include= ['.git', '.aux', '.log']#creates file types that we don't want to include 
 	for dirname,subdirs,files in os.walk(PATH):
-		files = [f for f in files if not f[0] == '.']
+		subdirs[:] = [d for d in subdirs if not d[0] == '.']
 		for fname in files:
 			full_path = os.path.join(dirname, fname)
 			mtime = os.stat(full_path).st_mtime
