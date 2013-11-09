@@ -76,19 +76,25 @@ def shrinkPartition(client):
 		cacheFiles.append(CacheFile(meta['path'], datetime.strptime(date, format), meta['bytes'])) 
 	#Sort by date
 	cacheFiles.sort(key=KEY)
+	completed = False
 	while freeSpace <= 0 and len(cacheFiles)>0:
 		removedFile = cacheFiles.pop()
 		client.file_delete(removedFile.directory)
 		freeSpace += removedFile.size
+		completed = True
+	return completed
 
 def main():
 	client = authenticate()
-	shrinkPartition(client)
-	#addFiles(getFinalList(client), client)
-	# date1 = datetime.date.today()
-	# cacheFile = CacheFile('./test.c', date1, 1)
-	# finalList = [cacheFile]
-	# addFiles(finalList, authenticate())
-
+	initialSpace = getAvailableSpace(client)
+	while True:
+		if (time.time() % 3600) < 30:
+			addFiles(getFinalList(client), client)
+		else:
+			if (abs(initialSpace - getAvailableSpace(client)) > TOLERANCE):
+				completed = shrinkPartition(client)
+				if completed:
+					initialSpace = getAvailableSpace(client)
+		time.sleep(30)
 if __name__ == "__main__":
 	main()
