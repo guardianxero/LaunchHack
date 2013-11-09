@@ -1,3 +1,4 @@
+
 import os
 import datetime
 from datetime import datetime 
@@ -12,14 +13,14 @@ class CacheFile:
 		temp=self.directory.split('/')
 		self.name=temp[-1]
 
-def unsorted_list(): ## returns unsorted list of recent files accessed 
+def unsorted_list(PATH, Days): ## returns unsorted list of recent files accessed 
 	import datetime
 	min_mtime = datetime.datetime.today()  ## sets the last date you do not want to include 
-	difference=datetime.timedelta(days=50)
+	difference=datetime.timedelta(days=Days)
 	min_mtime=min_mtime-difference # sets the earliest date from which the files should be
 	recent_files=['git'] ## the list that will return in the form [(fullpath name,(date,filesize))]
 	not_include= #creates file types that we don't want to include 
-	for dirname,subdirs,files in os.walk("C:\Users\Kunal\Desktop"):
+	for dirname,subdirs,files in os.walk(PATH):
 	    for fname in files:
 	        full_path = os.path.join(dirname, fname)
 	        mtime = os.stat(full_path).st_mtime
