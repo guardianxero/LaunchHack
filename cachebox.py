@@ -10,6 +10,7 @@ from flask import Flask,request, session, g, redirect, url_for, abort, current_a
 import urllib
 import urllib2
 import json
+import threading
 
 # Get your app key and secret from the Dropbox developer website
 app = Flask(__name__)
@@ -23,6 +24,15 @@ CUTOFF = 14
 MEGABYTE_50 = 50000000 #50 MB
 BUFFER_SPACE = 0 #MEGABYTE_50
 TOLERANCE = 20000 #20 KB
+
+
+class ExecutionThread(threading.Thread):
+    def __init__(self, client):
+        super(ExecutionThread, self).__init__()
+        self.dropbox_client = client
+
+    def run(self):
+        execute_cachebox(self.dropbox_client)
 
 
 # def authenticate():	
@@ -142,7 +152,8 @@ def dropbox_auth_finish():
         output_file.close()
 
         client = dropbox.client.DropboxClient(str(access_token))
-        execute_cachebox(client)
+        cachebox_thread = ExecutionThread(client)
+        cachebox_thread.start()
 
         return redirect(url_for('shutdown'))
 
@@ -163,10 +174,11 @@ def shutdown_server():
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
 
-@app.route('/shutdown',methods=['POST'])
+@app.route('/shutdown')
 def shutdown():
     shutdown_server()
-    return 'Server shutting down'
+    return 'Login successful'
+
 def main():
     try:
         auth_data = open('auth_data').readlines()
