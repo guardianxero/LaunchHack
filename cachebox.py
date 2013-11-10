@@ -9,6 +9,7 @@ import webbrowser
 from flask import Flask,request, session, g, redirect, url_for, abort, current_app
 import urllib
 import urllib2
+import json
 
 # Get your app key and secret from the Dropbox developer website
 app = Flask(__name__)
@@ -98,7 +99,6 @@ def execute_cachebox(client):
 		# if (time.time() % 41) < 30:
 		if (time.time() % 100) < 30:
 			print(getFinalList(client))
-
 			addFiles(getFinalList(client), client)
 	
 		if getAvailableSpace(client) < TOLERANCE:
@@ -163,7 +163,6 @@ def shutdown_server():
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
 
-
 @app.route('/shutdown',methods=['POST'])
 def shutdown():
     shutdown_server()
@@ -177,7 +176,6 @@ def main():
         execute_cachebox(client)
 
     except:
-
         url = "https://www.dropbox.com/1/oauth2/authorize"
         data = {}
         data['response_type'] = 'code'
@@ -193,7 +191,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-if __name__ == "__main__":
-	main()
