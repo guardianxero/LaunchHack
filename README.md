@@ -1,3 +1,0 @@
-LaunchHack
-==========
-Yup.
