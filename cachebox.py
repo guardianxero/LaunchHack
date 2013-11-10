@@ -174,7 +174,8 @@ def main():
         
         client = dropbox.client.DropboxClient(oauth2_token)
         execute_cachebox(client)
-
+    except KeyboardInterrupt:
+    	pass
     except:
         url = "https://www.dropbox.com/1/oauth2/authorize"
         data = {}
