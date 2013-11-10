@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 # Include the Dropbox SDK
 import dropbox
 import datetime
@@ -186,7 +188,8 @@ def main():
         
         client = dropbox.client.DropboxClient(oauth2_token)
         execute_cachebox(client)
-
+    except KeyboardInterrupt:
+    	exit(0)
     except:
         url = "https://www.dropbox.com/1/oauth2/authorize"
         data = {}
