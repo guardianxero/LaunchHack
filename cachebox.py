@@ -74,7 +74,6 @@ def getFinalList(client):
 		if (addedSpace + fileToAdd.size) < (freeSpace):
 			finalList.append(fileToAdd)
 			addedSpace += fileToAdd.size
-			print(finalList)
 	finalList.reverse()
 	return finalList
 
@@ -98,6 +97,7 @@ def shrinkPartition(client):
 	#Sort by date
 	cacheFiles.sort(key=KEY)
 	completed = False
+        cacheFiles.reverse()
 	while freeSpace <= 0 and len(cacheFiles)>0:
 		removedFile = cacheFiles.pop()
 		client.file_delete(removedFile.directory)
@@ -110,11 +110,11 @@ def execute_cachebox(client):
 	while True:
 		# if (time.time() % 41) < 30:
 		if (time.time() % 100) < 30:
-			print(getFinalList(client))
+			print('Updating Cache')
 			addFiles(getFinalList(client), client)
 	
 		if getAvailableSpace(client) < TOLERANCE:
-			print('in if')
+			print('Shrinking partition.')
 			completed = shrinkPartition(client)
 			if completed: 
 				initialSpace = getAvailableSpace(client) 
@@ -122,7 +122,7 @@ def execute_cachebox(client):
 			completed = shrinkPartition(client)
 			if completed:
 				initialSpace = getAvailableSpace(client)
-		time.sleep(30)
+		time.sleep(15)
 
 @app.route('/')
 def home():
@@ -179,7 +179,8 @@ def shutdown_server():
 @app.route('/shutdown')
 def shutdown():
     shutdown_server()
-    return 'Login successful'
+    return redirect(url_for('static', filename='logo.html'))
+
 
 def main():
     try:
